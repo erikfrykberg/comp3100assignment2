@@ -110,8 +110,10 @@ public class COMP3100_ASS2 {
                     identityCounter.put(identity, currentCount);
                     
                     //simply recieve the rest.
+                    System.out.println("i = " + i);
                     for(int e = i; e < totalServers; e++){
                         recieve();
+                        System.out.println("i.e = " + e);
                     }
 
                     //break from the for loop.
