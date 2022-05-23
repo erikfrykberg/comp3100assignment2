@@ -105,19 +105,6 @@ public class COMP3100_ASS2 {
                 if(identityCounter.get(identity) == null) {
                     //schedule the server
                     smallestIdentification = identity;
-                    
-                    //add it to the list..
-                    identityCounter.put(identity, currentCount);
-                    
-                    //simply recieve the rest.
-                    System.out.println("i = " + i);
-                    for(int e = (i + 1); e <= totalServers; e++){
-                        recieve();
-                        System.out.println("i.e = " + e);
-                    }
-
-                    //break from the for loop.
-                    break;
                 }
                 
                 //it already exists in the identityCounter, so check if it is lower than the current lower index.
