@@ -61,7 +61,7 @@ public class COMP3100_ASS2 {
             }
 
             //if a job completed.
-            if(jobCommand.equals("JPCL")) {
+            if(jobCommand.equals("JCPL")) {
                 return;
             }
 
