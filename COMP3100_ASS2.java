@@ -120,6 +120,8 @@ public class COMP3100_ASS2 {
                 c++;
             }
 
+            recieve();
+
             push("OK"); //after recieving all of the servers!
 
             // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
