@@ -66,6 +66,7 @@ public class COMP3100_ASS2 {
             }
 
             //THEREFORE, THERE IS A JOB READY FOR SCHEDULING:
+            System.out.println("str: " + str);
             jobStrings = str.split(" "); //split the job.
             jobId = jobStrings[2]; //set job id.
             String coresRequired = jobStrings[jobStrings.length - 3]; //save cores required.
@@ -119,8 +120,6 @@ public class COMP3100_ASS2 {
                 System.out.println("counter: " + c + ", currentCount: " + currentCount);
                 c++;
             }
-
-            recieve();
 
             push("OK"); //after recieving all of the servers!
 
