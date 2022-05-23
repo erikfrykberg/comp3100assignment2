@@ -45,7 +45,8 @@ public class COMP3100_ASS2 {
         TreeMap<String, Integer> identityCounter = new TreeMap<>(); // SERVER VARIABLES [IDENTITY - "TYPE:ID"] -> [COUNT].
 
         //WHILE THERE ARE JOBS TO SCHEDULE.
-        while(!str.equals("NONE")) {
+        int x = 1;
+        while(x == 1) {
 
             //SEND REDY (for jobs)
             push("REDY");
