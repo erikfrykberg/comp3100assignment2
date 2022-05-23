@@ -75,7 +75,7 @@ public class COMP3100_ASS2 {
             //REQUEST SERVERS
             push("GETS Capable " + coresRequired + " " + memoryRequired + " " + disksRequired);
 
-            // recieve();
+            recieve();
 
             //RECIEVE THE DATA [number] [length of characters].
             recieve();
@@ -123,7 +123,8 @@ public class COMP3100_ASS2 {
             
             //we now have the smallest server identification name.
             String[] serverInformation = smallestIdentification.split(":");
-            String type = serverInformation[1];
+            System.out.println("----------------------- smallestIdentification: " + smallestIdentification);
+            String type = serverInformation[0];
             String id = serverInformation[1];             
 
             //push the schedule.
