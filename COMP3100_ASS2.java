@@ -109,6 +109,11 @@ public class COMP3100_ASS2 {
                     //add it to the list..
                     identityCounter.put(identity, currentCount);
                     
+                    //simply recieve the rest.
+                    for(int e = i; e < totalServers; e++){
+                        recieve();
+                    }
+
                     //break from the for loop.
                     break;
                 }
@@ -121,6 +126,8 @@ public class COMP3100_ASS2 {
                     smallestIdentification = identity;
                 }
             }
+
+            push("OK"); //after recieving all of the servers!
 
             // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
 
