@@ -142,6 +142,8 @@ public class COMP3100_ASS2 {
 
             //increase the current count and for the 
             currentCount++;
+
+            System.out.println("=======================================================");
         }
 
         /**
