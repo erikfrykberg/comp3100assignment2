@@ -103,8 +103,10 @@ public class COMP3100_ASS2 {
                 //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
                 System.out.println("identityCount: " + identityCounter.get(identity) + ", currentCount: " + currentCount);
                 if(identityCounter.get(identity) == null) {
-                    //schedule the server
-                    smallestIdentification = identity;
+                    if(smallestIdentification == ""){
+                        //schedule the server
+                        smallestIdentification = identity;
+                    }
                 } else {
                     //it already exists in the identityCounter, so check if it is lower than the current lower index.
                     int count = identityCounter.get(identity);
