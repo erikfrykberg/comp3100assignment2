@@ -58,6 +58,7 @@ public class COMP3100_ASS2 {
             String jobCommand = str.split(" ")[0];
             if(jobCommand.equals("NONE")) {
                 quit();
+                return; //end here!
             }
 
             //if a job completed.
@@ -238,6 +239,7 @@ public class COMP3100_ASS2 {
 
         dout.close();  
         s.close();  
+        
     }
     
     /**
