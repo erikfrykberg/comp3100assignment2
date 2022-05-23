@@ -123,6 +123,8 @@ public class COMP3100_ASS2 {
 
             push("OK"); //after recieving all of the servers!
 
+            recieve();
+
             // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
 
             // [1] SCHEDULE THE JOB.
