@@ -75,9 +75,9 @@ public class COMP3100_ASS2 {
             //REQUEST SERVERS
             push("GETS Capable " + coresRequired + " " + memoryRequired + " " + disksRequired);
 
-            recieve();
+            // recieve();
 
-            push("OK");
+            // push("OK");
 
             //RECIEVE THE DATA [number] [length of characters].
             recieve();
