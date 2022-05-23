@@ -82,6 +82,7 @@ public class COMP3100_ASS2 {
             //RECIEVE THE DATA [number] [length of characters].
             recieve();
             int totalServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
+            System.out.println(" ---<>--- There should be: " + str.split(" ")[1] + " number of servers ---<>--- \n");
 
             //SEND 'OK'
             push("OK");
@@ -93,12 +94,14 @@ public class COMP3100_ASS2 {
             //RECIEVE THE SERVERS - MUST BE AT LEAST 1!
             for(int i = 0; i < totalServers; i++){
                 recieve(); //recieve each server, and then split it into its important components.
+
                 String[] serverInformation = str.split(" ");
                 String type = serverInformation[0]; //save the type.
                 String id = serverInformation[1]; //save the ID.
-                String identity = type + ":" + id; //this is the 
+                String identity = type + ":" + id; //this is the servers identity.
 
                 //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
+                System.out.println("identityCount: " + identityCounter.get(identity) + ", currentCount: " + currentCount);
                 if(identityCounter.get(identity) == null) {
                     //schedule the server
                     smallestIdentification = identity;
@@ -109,7 +112,7 @@ public class COMP3100_ASS2 {
                     //break from the for loop.
                     break;
                 }
-
+                
                 //it already exists in the identityCounter, so check if it is lower than the current lower index.
                 int count = identityCounter.get(identity);
                 if(count < lowestIndex) {
