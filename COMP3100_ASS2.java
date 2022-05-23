@@ -105,15 +105,16 @@ public class COMP3100_ASS2 {
                 if(identityCounter.get(identity) == null) {
                     //schedule the server
                     smallestIdentification = identity;
+                } else {
+                    //it already exists in the identityCounter, so check if it is lower than the current lower index.
+                    int count = identityCounter.get(identity);
+                    if(count < lowestIndex) {
+                        //we need to set the two variables.
+                        lowestIndex = count;
+                        smallestIdentification = identity;
+                    }
                 }
                 
-                //it already exists in the identityCounter, so check if it is lower than the current lower index.
-                int count = identityCounter.get(identity);
-                if(count < lowestIndex) {
-                    //we need to set the two variables.
-                    lowestIndex = count;
-                    smallestIdentification = identity;
-                }
             }
 
             push("OK"); //after recieving all of the servers!
