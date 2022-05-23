@@ -55,16 +55,15 @@ public class COMP3100_ASS2 {
             recieve();
 
             //if there are no more jobs, we must exit.
-            if(str.equals("NONE")) {
+            String jobCommand = str.split(" ")[0];
+            if(jobCommand.equals("NONE")) {
                 quit();
             }
 
             //if a job completed.
-            if(str.equals("JPCL")) {
+            if(jobCommand.equals("JPCL")) {
                 return;
             }
-
-            String jobCommand = str.split(" ")[0];
 
             //THEREFORE, THERE IS A JOB READY FOR SCHEDULING:
             jobStrings = str.split(" "); //split the job.
@@ -119,7 +118,7 @@ public class COMP3100_ASS2 {
             }
 
             // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
-            
+
             // [1] SCHEDULE THE JOB.
             
             //we now have the smallest server identification name.
