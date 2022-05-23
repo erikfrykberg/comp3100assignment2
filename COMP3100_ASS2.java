@@ -61,8 +61,8 @@ public class COMP3100_ASS2 {
             }
 
             //if a job completed.
-            if(jobCommand.equals("JCPL")) {
-                return;
+            if(!jobCommand.equals("JCPL")) {
+                continue;
             }
 
             //THEREFORE, THERE IS A JOB READY FOR SCHEDULING:
