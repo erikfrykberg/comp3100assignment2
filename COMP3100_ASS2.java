@@ -59,6 +59,8 @@ public class COMP3100_ASS2 {
                 quit();
             }
 
+            String jobCommand = str.split(" ")[0];
+
             //THEREFORE, THERE IS A JOB READY FOR SCHEDULING:
             jobStrings = str.split(" "); //split the job.
             jobId = jobStrings[2]; //set job id.
@@ -112,27 +114,28 @@ public class COMP3100_ASS2 {
             }
 
             // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
-            
-            // [1] SCHEDULE THE JOB.
-            
-            //we now have the smallest server identification name.
-            String[] serverInformation = smallestIdentification.split(":");
-            String type = serverInformation[1];
-            String id = serverInformation[1];             
+            if(jobCommand.equals("JOBN")){
+                // [1] SCHEDULE THE JOB.
+                
+                //we now have the smallest server identification name.
+                String[] serverInformation = smallestIdentification.split(":");
+                String type = serverInformation[1];
+                String id = serverInformation[1];             
 
-            //push the schedule.
-            push("SCHD " + jobId + " " + type + " " + id);
+                //push the schedule.
+                push("SCHD " + jobId + " " + type + " " + id);
 
-            // [2] increase count of this server.
+                // [2] increase count of this server.
 
-            identityCounter.put(smallestIdentification, currentCount);
+                identityCounter.put(smallestIdentification, currentCount);
 
-            // [3] increase the current count.
+                // [3] increase the current count.
 
-            currentCount = currentCount + 1;
+                currentCount = currentCount + 1;
 
-            //increase the current count and for the 
-            currentCount++;
+                //increase the current count and for the 
+                currentCount++;
+            }
         }
 
         /**
