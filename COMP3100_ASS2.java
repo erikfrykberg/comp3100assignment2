@@ -12,6 +12,8 @@ public class COMP3100_ASS2 {
     static String str;
     static String[] jobStrings;
     static int currentCount = 0;
+    static String jobId; //we need to save the id of each job.
+    static TreeMap<String, Integer> identityCounter = new TreeMap<>(); // SERVER VARIABLES [IDENTITY - "TYPE:ID"] -> [COUNT].
     
     public static void main(String[] args) throws Exception {
         s = new Socket("localhost",50000);  
@@ -41,8 +43,6 @@ public class COMP3100_ASS2 {
 
         // VARIABLE DEFINITIONS
         str = ""; // for the server corespondence.
-        String jobId; //we need to save the id of each job.
-        TreeMap<String, Integer> identityCounter = new TreeMap<>(); // SERVER VARIABLES [IDENTITY - "TYPE:ID"] -> [COUNT].
 
         //WHILE THERE ARE JOBS TO SCHEDULE.
         int x = 1;
@@ -56,115 +56,116 @@ public class COMP3100_ASS2 {
 
             //if there are no more jobs, we must exit.
             String jobCommand = str.split(" ")[0];
-            if(jobCommand.equals("NONE")) {
-                quit();
-                return; //end here!
-            }
-
             //if a job completed.
             if(jobCommand.equals("JCPL")) {
                 continue;
             }
-
-            //THEREFORE, THERE IS A JOB READY FOR SCHEDULING:
-            System.out.println("str: " + str);
-            jobStrings = str.split(" "); //split the job.
-            jobId = jobStrings[2]; //set job id.
-            String coresRequired = jobStrings[jobStrings.length - 3]; //save cores required.
-            String memoryRequired = jobStrings[jobStrings.length - 2]; //save memory required.
-            String disksRequired = jobStrings[jobStrings.length - 1]; //save disks required.
-
-            //REQUEST SERVERS
-            push("GETS Capable " + coresRequired + " " + memoryRequired + " " + disksRequired);
-
-            // recieve();
-
-            // push("OK");
-
-            //RECIEVE THE DATA [number] [length of characters].
-            recieve();
-            int totalServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
-            System.out.println(" ---<>--- There should be: " + str.split(" ")[1] + " number of servers ---<>--- \n");
-
-            //SEND 'OK'
-            push("OK");
-
-            //set server variables.
-            String smallestIdentification = "";
-            int lowestIndex = -1;
-
-            int c = 0;
-            //RECIEVE THE SERVERS - MUST BE AT LEAST 1!
-            for(int i = 0; i < totalServers; i++){
-                recieve(); //recieve each server, and then split it into its important components.
-
-                String[] serverInformation = str.split(" ");
-                String type = serverInformation[0]; //save the type.
-                String id = serverInformation[1]; //save the ID.
-                String identity = type + ":" + id; //this is the servers identity.
-
-                //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
-                if(identityCounter.get(identity) == null) {
-                    if(smallestIdentification == ""){
-                        //schedule the server
-                        smallestIdentification = identity;
-                    }
-                } else {
-                    //it already exists in the identityCounter, so check if it is lower than the current lower index.
-                    int count = identityCounter.get(identity);
-                    if(count < lowestIndex || lowestIndex == -1) {
-                        //we need to set the two variables.
-                        lowestIndex = count;
-                        smallestIdentification = identity;
-                    }
-                }
-                System.out.println("counter: " + c + ", currentCount: " + currentCount);
-                c++;
+            
+            if(jobCommand.equals("JOBN")) {
+                schedule();
             }
 
-            push("OK"); //after recieving all of the servers!
+            if(jobCommand.equals("NONE")) {
+                x = 0; //exit the loop, and quit.
+            }
 
-            recieve();
-
-            // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
-
-            // [1] SCHEDULE THE JOB.
-            
-            //we now have the smallest server identification name.
-            String[] serverInformation = smallestIdentification.split(":");
-            System.out.println("----------------------- smallestIdentification: " + smallestIdentification);
-            String type = serverInformation[0];
-            String id = serverInformation[1];             
-
-            //push the schedule.
-            push("SCHD " + jobId + " " + type + " " + id);
-
-            // [2] increase count of this server.
-
-            identityCounter.put(smallestIdentification, currentCount);
-
-            // [3] increase the current count.
-
-            currentCount = currentCount + 1;
-
-            //increase the current count and for the 
-            currentCount++;
-
-            recieve();
-
-            System.out.println("=======================================================");
         }
-
-        /**
-             * 
-             *  QUIT!
-             * 
-            */
-
         //QUIT!
         quit();
     }
     
+
+    static void schedule() throws IOException {
+        
+        // WE RECIEVED A JOBN!
+        jobStrings = str.split(" "); //split the job.
+        jobId = jobStrings[2]; //set job id.
+        String coresRequired = jobStrings[jobStrings.length - 3]; //save cores required.
+        String memoryRequired = jobStrings[jobStrings.length - 2]; //save memory required.
+        String disksRequired = jobStrings[jobStrings.length - 1]; //save disks required.
+
+
+        //REQUEST SERVERS
+        push("GETS Capable " + coresRequired + " " + memoryRequired + " " + disksRequired);
+
+
+        //RECIEVE THE DATA [number] [length of characters].
+        recieve();
+        int totalServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
+        System.out.println(" ---<>--- There should be: " + str.split(" ")[1] + " number of servers ---<>--- \n");
+
+
+        //SEND 'OK'
+        push("OK");
+
+
+        //set server variables.
+        String smallestIdentification = "";
+        int lowestIndex = -1;
+        //RECIEVE THE SERVERS - MUST BE AT LEAST 1!
+        for(int i = 0; i < totalServers; i++){
+            recieve(); //recieve each server, and then split it into its important components.
+
+            String[] serverInformation = str.split(" ");
+            String type = serverInformation[0]; //save the type.
+            String id = serverInformation[1]; //save the ID.
+            String identity = type + ":" + id; //this is the servers identity.
+
+            System.out.println("identity: " + identity);
+
+            //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
+            if(identityCounter.get(identity) == null) {
+                if(smallestIdentification == ""){
+                    //schedule the server
+                    smallestIdentification = identity;
+                }
+            } else {
+                //it already exists in the identityCounter, so check if it is lower than the current lower index.
+                int count = identityCounter.get(identity);
+                if(count < lowestIndex || lowestIndex == -1) {
+                    //we need to set the two variables.
+                    lowestIndex = count;
+                    smallestIdentification = identity;
+                }
+            }
+        }
+
+
+        push("OK"); //after recieving all of the servers!
+
+
+        recieve();
+
+        // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
+
+        // [1] SCHEDULE THE JOB.
+        
+        //we now have the smallest server identification name.
+        String[] serverInformation = smallestIdentification.split(":");
+        System.out.println("----------------------- smallestIdentification: " + smallestIdentification);
+        String type = serverInformation[0];
+        String id = serverInformation[1];             
+
+        //push the schedule.
+        push("SCHD " + jobId + " " + type + " " + id);
+
+        // [2] increase count of this server.
+
+        identityCounter.put(smallestIdentification, currentCount);
+
+        // [3] increase the current count.
+
+        currentCount = currentCount + 1;
+
+        //increase the current count and for the 
+        currentCount++;
+
+        recieve();
+
+        System.out.println("=======================================================");
+    }
+
+
     /**
      * Initiates the handshake protocol with the server.
      * @param account - the account that will be used to authorise the connection.
