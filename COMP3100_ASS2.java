@@ -77,6 +77,8 @@ public class COMP3100_ASS2 {
 
             recieve();
 
+            push("OK");
+
             //RECIEVE THE DATA [number] [length of characters].
             recieve();
             int totalServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
