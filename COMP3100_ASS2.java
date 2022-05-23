@@ -111,7 +111,7 @@ public class COMP3100_ASS2 {
                 } else {
                     //it already exists in the identityCounter, so check if it is lower than the current lower index.
                     int count = identityCounter.get(identity);
-                    if(count < lowestIndex) {
+                    if(count < lowestIndex || lowestIndex == -1) {
                         //we need to set the two variables.
                         lowestIndex = count;
                         smallestIdentification = identity;
