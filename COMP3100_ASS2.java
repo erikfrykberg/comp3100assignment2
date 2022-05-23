@@ -92,7 +92,7 @@ public class COMP3100_ASS2 {
                 //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
                 if(identityCounter.get(identity) == null) {
                     //schedule the server
-                    push("SCHD " + jobId + " " + type + " " + id);
+                    smallestIdentification = identity;
                     
                     //add it to the list..
                     identityCounter.put(identity, currentCount);
