@@ -91,6 +91,7 @@ public class COMP3100_ASS2 {
             String smallestIdentification = "";
             int lowestIndex = -1;
 
+            int c = 0;
             //RECIEVE THE SERVERS - MUST BE AT LEAST 1!
             for(int i = 0; i < totalServers; i++){
                 recieve(); //recieve each server, and then split it into its important components.
@@ -101,7 +102,6 @@ public class COMP3100_ASS2 {
                 String identity = type + ":" + id; //this is the servers identity.
 
                 //if the server is null, it hasn't been used - so we will use it straight away (and it will be the smallest, since its ordered!).
-                System.out.println("identityCount: " + identityCounter.get(identity) + ", currentCount: " + currentCount);
                 if(identityCounter.get(identity) == null) {
                     if(smallestIdentification == ""){
                         //schedule the server
@@ -116,7 +116,8 @@ public class COMP3100_ASS2 {
                         smallestIdentification = identity;
                     }
                 }
-                
+                System.out.println("counter: " + c + ", currentCount: " + currentCount);
+                c++;
             }
 
             push("OK"); //after recieving all of the servers!
