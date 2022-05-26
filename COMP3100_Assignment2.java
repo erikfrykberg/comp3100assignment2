@@ -12,11 +12,7 @@ public class COMP3100_Assignment2 {
     static String str;
     static String[] jobStrings;
     static int currentCount = 0;
-    static String jobId; //we need to save the id of each job.
     static TreeMap<String, Integer> identityCounter = new TreeMap<>(); // SERVER VARIABLES [IDENTITY - "TYPE:ID"] -> [COUNT].
-    static String cmd = "Avail";
-    
-    static int capableUsed = 0;
 
     public static void main(String[] args) throws Exception {
         s = new Socket("localhost",50000);  
@@ -63,19 +59,23 @@ public class COMP3100_Assignment2 {
 
             //if there are no more jobs, we must exit.
             String jobCommand = str.split(" ")[0];
+
             //if a job completed.
             if(jobCommand.equals("JCPL")) {
-                continue;
+                continue; //skip this loop instance.
             }
             
+            //if a new job is ready
             if(jobCommand.equals("JOBN")) {
                 schedule();
             }
 
+            //if there are no more jobs for scheduling.
             if(jobCommand.equals("NONE")) {
                 x = 0; //exit the loop, and quit.
             }
 
+            //no jobs in queue, but jobs are running (do nothing but loop back to top). 
         }
         //QUIT!
         quit();
@@ -85,12 +85,12 @@ public class COMP3100_Assignment2 {
     static void schedule() throws IOException {
         
         // WE RECIEVED A JOBN!
+
         jobStrings = str.split(" "); //split the job.
-        jobId = jobStrings[2]; //set job id.
+        String jobId = jobStrings[2]; //we need to save the id of each job.
         String coresRequired = jobStrings[jobStrings.length - 3]; //save cores required.
         String memoryRequired = jobStrings[jobStrings.length - 2]; //save memory required.
         String disksRequired = jobStrings[jobStrings.length - 1]; //save disks required.
-        cmd = "Avail";
 
         //REQUEST SERVERS
         push("GETS Avail " + coresRequired + " " + memoryRequired + " " + disksRequired);
@@ -103,74 +103,53 @@ public class COMP3100_Assignment2 {
         //SEND 'OK'
         push("OK");
 
+        //set server variables.
+        String identification = "";
+        int fit = -1;
+        ArrayList<String> servers = new ArrayList();
+
+        //if avaliable servers is zero - then we need to use get capable!
         if(totalServers == 0){
-            cmd = "Capable";
-            capableUsed++;
             recieve();
             
-            System.out.println("trying GETS Capble!!!");
             //REQUEST SERVERS
             push("GETS Capable " + coresRequired + " " + memoryRequired + " " + disksRequired);
 
             //RECIEVE THE DATA [number] [length of characters].
             recieve();
             totalServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
-            System.out.println(" ---<>--- There should ACTAULLY be: " + str.split(" ")[1] + " number of servers ---<>--- \n");
 
             //SEND 'OK'
             push("OK");
-        }
 
-        //set server variables.
-        String identification = "";
-        int fit = -1;
-
-        //RECIEVE THE SERVERS - MUST BE AT LEAST 1!
-        ArrayList<String> servers = new ArrayList();
-        for(int i = 0; i < totalServers; i++){
-            recieve(); //recieve each server, and then split it into its important components.
-
-            String[] serverInformation = str.split(" ");
-            String type = serverInformation[0]; //save the type.
-            String id = serverInformation[1]; //save the ID.
-            String cores = serverInformation[serverInformation.length - 3];
-            String identity = type + ":" + id + ":" + cores; //this is the servers identity.
-
-            System.out.println("identity: " + identity);
-
-            //find the smallest difference.
-            int currentFit = Integer.parseInt(cores) - Integer.parseInt(coresRequired);
-            
-            //not been set or this fit better than saved fit.
-            if(cmd == "Avail" && (fit == -1 || currentFit < fit)) {
-                fit = currentFit;
-                identification = identity;
-            } 
-
-            // if we are looking at the most capable servers, pick one with the least amount of waiting time!.
-            if(cmd == "Capable"){
+            for(int i = 0; i < totalServers; i++){
+                recieve(); //recieve each server, and then split it into its important components.
+    
+                String[] serverInformation = str.split(" ");
+                String type = serverInformation[0]; //save the type.
+                String id = serverInformation[1]; //save the ID.
+                String cores = serverInformation[serverInformation.length - 3];
+                String identity = type + ":" + id + ":" + cores; //this is the servers identity.
+    
+                System.out.println("identity: " + identity);
+    
                 //add all the servers!
                 servers.add(identity);
             }
-        }
 
+            push("OK"); //after recieving all of the servers!
 
-        push("OK"); //after recieving all of the servers!
+            recieve(); //recieve "."
 
+            //now we need to figure out which server has the smallest amount of time before job will be run (sum of executionTime)
 
-        recieve(); //recieve "."
-
-        // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
-
-        // FIRST CHECK IF WE HAD TO USE GETCAPABLE!
-        Integer smallestRunTime = -1;
-        if(servers.size() != 0){
-            //there are servers!
+            Integer smallestRunTime = -1;
             for(int i = 0; i < servers.size(); i++){
                 String[] serverInformation = servers.get(i).split(":");
                 String type = serverInformation[0];
                 String id = serverInformation[1];
                 
+                //find all of the assigned jobs and their execution time (includes currently running job)..
                 push("LSTJ " + type + " " + id);
 
                 //recieve amount.
@@ -179,29 +158,60 @@ public class COMP3100_Assignment2 {
 
                 push("OK");
 
-                int totalRunTime = 0;
+                int totalRunTime = 0; //save total run time for this server
                 for(int e = 0; e < amountServers; e++){
                     recieve();
                     System.out.println("str. split[4]: " + str.split(" ")[4]);
                     totalRunTime = totalRunTime + Integer.parseInt(str.split(" ")[4]);
                 }
 
+                //if total run time for this server is less than the smallest run time, set this to be identification (will be scheduled next).
                 if(smallestRunTime == -1 || totalRunTime < smallestRunTime) {
-                    smallestRunTime = totalRunTime;
-                    identification = servers.get(i);
+                    smallestRunTime = totalRunTime; //set the new smallest run time.
+                    identification = servers.get(i); //set identification.
                 }
+                
                 push("OK");
-
                 //recieve "."
                 recieve();
             }
+
+        } else {
+            for(int i = 0; i < totalServers; i++){
+                recieve(); //recieve each server, and then split it into its important components.
+    
+                String[] serverInformation = str.split(" ");
+                String type = serverInformation[0]; //save the type.
+                String id = serverInformation[1]; //save the ID.
+                String cores = serverInformation[serverInformation.length - 3];
+                String identity = type + ":" + id + ":" + cores; //this is the servers identity.
+    
+                System.out.println("identity: " + identity);
+    
+                //find the smallest difference.
+                int currentFit = Integer.parseInt(cores) - Integer.parseInt(coresRequired);
+                
+                //not been set or this fit better than saved fit.
+                if(fit == -1 || currentFit < fit) {
+                    fit = currentFit;
+                    identification = identity;
+                }
+            }
+            push("OK"); //after recieving all of the servers!
+
+            recieve(); //recieve "." 
         }
 
-        // [1] SCHEDULE THE JOB.
         
+
+        /*
+            There are now 3 steps:
+        */
+
+        // [1] SCHEDULE THE JOB.
+
         //we now have the smallest server identification name.
         String[] serverInformation = identification.split(":");
-        System.out.println("----------------------- smallestIdentification: " + identification);
         String type = serverInformation[0];
         String id = serverInformation[1];             
 
@@ -221,7 +231,6 @@ public class COMP3100_Assignment2 {
 
         recieve();
 
-        System.out.println("=======================================================");
     }
 
 
@@ -251,7 +260,6 @@ public class COMP3100_Assignment2 {
 
         str = din.readLine();
         System.out.println("Connection Closed.." + "\u001B[0m");
-        System.out.println("---------------------------------- GETS CAPABLE USED: " + capableUsed);
         dout.close();  
         s.close();  
         
