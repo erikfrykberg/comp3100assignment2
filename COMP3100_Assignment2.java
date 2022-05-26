@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.io.*;
 
-public class ASS_4 {
+public class COMP3100_Assignment2 {
     
     //variable declarations.
     static Socket s;
@@ -30,6 +30,10 @@ public class ASS_4 {
             or for more info:
                 
                 ./ds-server -c '/home/erik/Documents/ds-sim/configs/sample-configs/ds-sample-config01.xml' -v all -n
+        
+            or for stage2 tests:
+
+                ./stage2-test-x86 "java COMP3100_Assignment2" -o tt -n
         */
 
         // CONFIRM CONNECTION WITH CONSOLE!
@@ -159,8 +163,7 @@ public class ASS_4 {
         // by the end of the for loop, we have the smallestIdentification required. There are now 3 steps.
 
         // FIRST CHECK IF WE HAD TO USE GETCAPABLE!
-        Integer smallestSize = -1;
-        ArrayList<String> noWaitingList = new ArrayList<>();
+        Integer smallestRunTime = -1;
         if(servers.size() != 0){
             //there are servers!
             for(int i = 0; i < servers.size(); i++){
@@ -168,62 +171,31 @@ public class ASS_4 {
                 String type = serverInformation[0];
                 String id = serverInformation[1];
                 
-                push("EJWT " + type + " " + id);
-
-                recieve();
-
-                Integer size = Integer.parseInt(str);
-                if(smallestSize == -1 || size < smallestSize) {
-                    smallestSize = size;
-                    identification = servers.get(i);
-                }
-
-                if(size == 0){
-                    //each time there is a size that is equal to zero... add it
-                    noWaitingList.add(servers.get(i));
-                }
-            }
-        }
-
-        //CHECK IF MULTIPLE TIED FOR NOWAITINGLIST..
-        if(noWaitingList.size() > 1) {
-            //find the one with the least amount of estRunTime
-            Integer lowestRunTimeRemaining = -1;
-            for(int i = 0; i < noWaitingList.size(); i++){
-                //calculate the estRunTime..
-                String[] serverInformation = noWaitingList.get(i).split(":");
-                String type = serverInformation[0];
-                String id = serverInformation[1];
-
                 push("LSTJ " + type + " " + id);
 
-                //RECIEVE "DATA x .."
+                //recieve amount.
                 recieve();
+                int amountServers = Integer.parseInt(str.split(" ")[1]); //save total servers from response.
 
                 push("OK");
 
-                Integer amtJobs;
-
-                    //GET THE ACTUAL INFORMATION
+                int totalRunTime = 0;
+                for(int e = 0; e < amountServers; e++){
                     recieve();
-
-                    Integer estRunTime = Integer.getInteger(str.split(" ")[5]);
-
-                if(lowestRunTimeRemaining == -1 || estRunTime < lowestRunTimeRemaining){
-                    identification = noWaitingList.get(i);
+                    System.out.println("str. split[4]: " + str.split(" ")[4]);
+                    totalRunTime = totalRunTime + Integer.parseInt(str.split(" ")[4]);
                 }
 
+                if(smallestRunTime == -1 || totalRunTime < smallestRunTime) {
+                    smallestRunTime = totalRunTime;
+                    identification = servers.get(i);
+                }
                 push("OK");
 
-                //RECIEVE "."
+                //recieve "."
                 recieve();
             }
-
-
-        } else if(noWaitingList.size() == 1) {
-            //then we must set identification to this node only.
-            identification = noWaitingList.get(0);
-        } 
+        }
 
         // [1] SCHEDULE THE JOB.
         
