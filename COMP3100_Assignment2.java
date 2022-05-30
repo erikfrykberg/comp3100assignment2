@@ -11,8 +11,6 @@ public class COMP3100_Assignment2 {
     static BufferedReader din;
     static String str;
     static String[] jobStrings;
-    static int currentCount = 0;
-    static TreeMap<String, Integer> identityCounter = new TreeMap<>(); // SERVER VARIABLES [IDENTITY - "TYPE:ID"] -> [COUNT].
 
     public static void main(String[] args) throws Exception {
         s = new Socket("localhost",50000);  
@@ -205,7 +203,7 @@ public class COMP3100_Assignment2 {
         
 
         /*
-            There are now 3 steps:
+            There are now 2 steps:
         */
 
         // [1] SCHEDULE THE JOB.
@@ -218,17 +216,9 @@ public class COMP3100_Assignment2 {
         //push the schedule.
         push("SCHD " + jobId + " " + type + " " + id);
 
-        // [2] increase count of this server.
 
-        identityCounter.put(identification, currentCount);
-
-        // [3] increase the current count.
-
-        currentCount = currentCount + 1;
-
-        //increase the current count and for the 
-        currentCount++;
-
+        // [2] RECIEVE CONFIRMATION
+        
         recieve();
 
     }
